@@ -20,14 +20,15 @@ It will resemble real artist's painting process in the outdoors to be accurate t
 
 ## Challenges
 - Camera denpth of different layers of images moving at different rates
-- Turle library documentation of short brush strokes not shapes with their own properties
+- Turtle library documentation of short brush strokes not shapes with their own properties
 - Timing hand animation with the brush strokes (will probably be done last)
 
 ## Outcomes
 Ideal Outcome:
 - pixel hand animation moves at the same time as brush strokes are generated
 - while dialogue is present.
-- Paint pallete is chosen 
+- Paint pallete is chosen
+- simple camera movements moving up and down.
 
 Minimal Viable Outcome:
 - The artwork on the canvas generated full screen
