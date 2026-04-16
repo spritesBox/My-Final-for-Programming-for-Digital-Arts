@@ -9,23 +9,24 @@ class Circle:
         self.pos = pos
         self.surface = self.update_surface()
 
-    def draw(self):
+    def draw(self, surface):
+       
         turtle.penup()
         turtle.goto(self.pos)
         turtle.pendown()
         turtle.fillcolor("red")
         turtle.begin_fill()
-        turtle.circle(self.radius)
+        turtle.circle(50)
         turtle.end_fill()
+        turtle.done()
+        surface.blit(self.update_surface(), self.pos)
 
     def update_surface(self):
-        self = pygame.Surface((self.radius, self.radius))
+        self = pygame.Surface((100,100))
+        self.fill((255,0,0))
         return self
         
         
-    def draw(self, surface):
-        surface.blit(self.update_surface(), self.pos)
-
 def main():
     #display screen
     pygame.init()
@@ -44,7 +45,7 @@ def main():
         black = pygame.Color(0,0,0)
         screen.fill(black)
         #pygame.Surface needs coordinates (blit) to appear on screen
-        Circle.draw(screen)
+        circle.draw(screen)
         pygame.display.flip()
         #print(particle.age)
 
