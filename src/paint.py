@@ -30,6 +30,15 @@ class Dot():
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
         return surf
+    
+    def update(self, dt):
+        self.age += dt
+        if self.age > self.life:
+            self.dead = True
+
+    def draw(self, surface):
+        self.surface.set_alpha(self.alpha)
+        surface.blit(self.surface, self.pos)
 
 
 #The function to generate the dots 
@@ -53,7 +62,25 @@ def main():
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
     art = generate_dots(resolution)
-    
+    #main loop to keep the window open and update the dots
+    running = True
+    clock = pygame.time.Clock()
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+        #update the dots and draw them on the screen
+        screen.fill((0,0,0)) #fill the background with black
+        for dot in art:
+            dot.update(clock.get_time()) #update the dot
+            if dot.dead:
+                art.remove(dot) #remove the dead dot from the list
+            else:
+                dot.draw(screen) #draw the dot on the screen
+
 
 
 if __name__ == "__main__":
