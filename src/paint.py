@@ -25,6 +25,7 @@ class Dot():
         self.life = life #in milliseconds
         self.dead = False
         self.surface = self.update_surface()
+        self.alpha = 255
         pygame.draw.circle(self.surface, self.color, (self.size//2, self.size//2), self.size//2, width=8)
 
     def update_surface(self):
@@ -42,21 +43,28 @@ class Dot():
 
 
 #The function to generate the dots 
-def generate_dots(num_dots, surface_size):
-    dots = []
+class Art():
+    def __init__(self):
+        self.dots = []
+
+    def generate_dots(self, num_dots, surface_size):
     #create surface area for dots to be generated, maybe 1/4 of screen
     #1. get resoultion of screen and //4 to get the area for the dots to be generated
-    infoObject = pygame.display.Info()
-    resolution = (infoObject.current_w, infoObject.current_h)
-    surface_size = (resolution[0]//4, resolution[1]//4)
+        infoObject = pygame.display.Info()
+        resolution = (infoObject.current_w, infoObject.current_h)
+        surface_size = (resolution[0]//4, resolution[1]//4)
     #for loop to create the specified number of dots 
-    for _ in range(num_dots):
-        pos = (random.randint(0, surface_size[0]), random.randint(0, surface_size[1]))
-        size = Dot.size
-        life = random.randint(500, 2000) #random life span for the dots
-        dot = Dot(pos, size, life)
-        dots.append(dot)
-    return dots
+        for _ in range(num_dots):
+            pos = (random.randint(0, surface_size[0]), random.randint(0, surface_size[1]))
+            size = 25
+            life = random.randint(500, 2000) #random life span for the dots
+            dot = Dot(pos, size, life)
+            self.dots.append(dot)
+        return self.dots
+
+    def draw(self, surface):
+            for dot in self.dots:
+                dot.draw(surface)
 
 #main function to create the window and run the program
 def main():
@@ -66,8 +74,8 @@ def main():
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
-    art = generate_dots(resolution)
-    dt = 0
+    art = Art()
+    art.generate_dots(100, resolution) #generate 100 dots for the artwork
     #main loop to keep the window open and update the dots
     running = True
     clock = pygame.time.Clock()
@@ -80,10 +88,10 @@ def main():
                     running = False
         #update the dots and draw them on the screen
         screen.fill((0,0,0)) #fill the background with black
-        for dot in art:
+        for dot in art.dots:
             dot.update(clock.get_time()) #update the dot
             if dot.dead:
-                art.remove(dot) #remove the dead dot from the list
+                art.dots.remove(dot) #remove the dead dot from the list
             else:
                 dot.draw(screen) #draw the dot on the screen
         pygame.display.flip() #update the display
