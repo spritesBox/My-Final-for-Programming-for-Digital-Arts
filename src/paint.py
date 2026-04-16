@@ -44,6 +44,11 @@ class Dot():
 #The function to generate the dots 
 def generate_dots(num_dots, surface_size):
     dots = []
+    #create surface area for dots to be generated, maybe 1/4 of screen
+    #1. get resoultion of screen and //4 to get the area for the dots to be generated
+    infoObject = pygame.display.Info()
+    resolution = (infoObject.current_w, infoObject.current_h)
+    surface_size = (resolution[0]//4, resolution[1]//4)
     #for loop to create the specified number of dots 
     for _ in range(num_dots):
         pos = (random.randint(0, surface_size[0]), random.randint(0, surface_size[1]))
@@ -62,6 +67,7 @@ def main():
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
     art = generate_dots(resolution)
+    dt = 0
     #main loop to keep the window open and update the dots
     running = True
     clock = pygame.time.Clock()
@@ -80,6 +86,9 @@ def main():
                 art.remove(dot) #remove the dead dot from the list
             else:
                 dot.draw(screen) #draw the dot on the screen
+        pygame.display.flip() #update the display
+        art.draw(screen)
+        dt = clock.tick(60) #limit the frame rate to 60 FPS
 
 
 
