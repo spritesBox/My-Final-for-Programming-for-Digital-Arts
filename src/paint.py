@@ -1,8 +1,10 @@
+from itertools import count
 import random
 import math
 from numpy import size
 from numpy import size
 import pygame
+import time
 
 
 
@@ -37,6 +39,7 @@ class Dot():
         #want dot to fade in but stay static, so alpha value increases until reaches 255 and stays there
         if self.age <1000: #fade in for the first second
             self.alpha = 255 * (self.age / 1000)
+        
 
     def draw(self, surface):
         self.surface.set_alpha(self.alpha)
@@ -45,22 +48,37 @@ class Dot():
 
 #The function to generate the dots 
 class Art():
-    def __init__(self):
+    def __init__(self, pos, size = 25):
         self.dots = []
+        self.time_interval = 1000
+        self.timer_event = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.timer_event, self.time_interval)
+        self.pos = pos
+        self.size = size
 
     def generate_dots(self, num_dots, surface_size):
     #create surface area for dots to be generated, maybe 1/4 of screen
-    #1. get resoultion of screen and //4 to get the area for the dots to be generated
+    #1. get resoultion of screen 
+    #2. create surface size based on resolution
+    #3. dvide surface by 4
         infoObject = pygame.display.Info()
         resolution = (infoObject.current_w, infoObject.current_h)
         surface_size = (resolution[0]//4, resolution[1]//4)
-    #for loop to create the specified number of dots 
-        for _ in range(num_dots):
+    #for loop to create the specified number of dots in random positions within surface_size
+        for circles in range(num_dots):
             pos = (random.randint(0, surface_size[0]), random.randint(0, surface_size[1]))
-            size = 25
+            size = self.size
             dot = Dot(pos, size)
-            self.dots.append(dot)
+            self.dots.append(dot) #add the dot to the list of dots in the artwork
         return self.dots
+        
+
+    def update(self, dt):
+        for dot in self.dots:
+            dot.update(dt) #update the properties of each dot in the artwork
+            if dot.dead:
+                self.dots.remove(dot) #remove the dot from the list if it is dead
+      
 
     def draw(self, surface):
             for dot in self.dots:
@@ -74,7 +92,7 @@ def main():
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
-    art = Art()
+    art = Art(resolution)
     art.generate_dots(100, resolution) #generate 100 dots for the artwork
     #main loop to keep the window open and update the dots
     running = True
@@ -83,19 +101,18 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == art.timer_event:
+                art.dots.append(art.generate_dots(1, resolution)) #generate a new dot every time the timer event is triggered
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
         #update the dots and draw them on the screen
         screen.fill((0,0,0)) #fill the background with black
+        #art.update(clock.get_time()) #update the artwork
         for dot in art.dots:
-            dot.update(clock.get_time()) #update the dot
-            if dot.dead:
-                art.dots.remove(dot) #remove the dead dot from the list
-            else:
-                dot.draw(screen) #draw the dot on the screen
+            dot.update(clock.get_time()) #update each dot in the artwork
+            art.draw(screen) #draw the artwork on the screen
         pygame.display.flip() #update the display
-        art.draw(screen)
         dt = clock.tick(60) #limit the frame rate to 60 FPS
 
 
