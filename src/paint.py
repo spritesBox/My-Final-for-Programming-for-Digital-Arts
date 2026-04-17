@@ -16,13 +16,13 @@ import pygame
 
 # Main Function to create the window and run the program 
 
+#Basic structure for the dot class
 class Dot():
-    def __init__(self, pos=(0,0), size =25, life = 1000):
+    def __init__(self, pos=(0,0), size =25):
         self.size = size
         self.pos = pos
         self.age = 0 #in milliseconds
         self.color = (255,0,0) #red color for the dots
-        self.life = life #in milliseconds
         self.dead = False
         self.surface = self.update_surface()
         self.alpha = 255
@@ -34,8 +34,9 @@ class Dot():
     
     def update(self, dt):
         self.age += dt
-        if self.age > self.life:
-            self.dead = True
+        #want dot to fade in but stay static, so alpha value increases until reaches 255 and stays there
+        if self.age <1000: #fade in for the first second
+            self.alpha = 255 * (self.age / 1000)
 
     def draw(self, surface):
         self.surface.set_alpha(self.alpha)
@@ -57,8 +58,7 @@ class Art():
         for _ in range(num_dots):
             pos = (random.randint(0, surface_size[0]), random.randint(0, surface_size[1]))
             size = 25
-            life = random.randint(500, 2000) #random life span for the dots
-            dot = Dot(pos, size, life)
+            dot = Dot(pos, size)
             self.dots.append(dot)
         return self.dots
 
