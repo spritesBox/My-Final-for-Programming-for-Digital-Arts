@@ -4,12 +4,20 @@ from numpy import size
 from numpy import size
 import pygame
 import time 
+from PIL import Image
+from tkinter import Tk
+import filedialog
 
 
 
 #User uploads image file
-#The image is processed into a grid of avg colors by ##x## pixels
-#Replace each grid with a dot of the avg color and size based on the brightness of the avg color
+#The image is processed into a grid by finding resolution
+#dividing the resolution by how many steps
+#1 step = 1 dot
+#avg the colors in each step
+#note middle position of each step to place the dot by its center
+#avg the color of each step
+#replace each step with a dot of that avg color and position
 #the dots will appear 1 by 1 in a random order
 #the dots stay static
 
@@ -66,6 +74,17 @@ class Art():
                 dot.draw(surface)
 
 
+#Function for user to upload image, maybe use tkinter for this and PIL
+def upload_image():
+    root = Tk()
+    root.withdraw() #hide the root window
+    file_path = filedialog.askopenfilename(
+        title = "Select an image file",
+        filetypes = [("Image files", "*.jpg *.jpeg *.png *.bmp *.gif")]
+    ) #open file dialog to select image
+    root.destroy() #destroy the root window after file is selected
+    return file_path
+    #so far does not save the file path
 
 #main function to create the window and run the program
 def main():
