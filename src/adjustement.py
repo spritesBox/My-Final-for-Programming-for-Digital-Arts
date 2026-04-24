@@ -33,12 +33,10 @@ class Dot():
         self.surface = pygame.Surface((self.step_x, self.step_y), pygame.SRCALPHA)
         self.alpha = 255
 
-        radius = min(self.step_x, self.step_y) // 2
-
-        pygame.draw.circle(self.surface, self.color, (self.step_x//2, self.step_y//2), radius)
+        pygame.draw.rect(self.surface, self.color, (0, 0, self.step_x, self.step_y))
 
     def update_surface(self):
-        surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
+        surf = pygame.Surface((self.step_x, self.step_y), pygame.SRCALPHA)
         return surf
     
     def update(self, dt):
@@ -127,7 +125,7 @@ def process_image(image_path, grid_size):
 
             #create a dot with the avg color and position it at the center of the section
             pos = (x_start, y_start)
-            dot = Dot(pos, size=size, color=avg_color)
+            dot = Dot(pos, step_x=step_x, step_y=step_y, color=avg_color)
             dots.append(dot)
     return dots, resolution
 
@@ -150,14 +148,16 @@ def main():
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
 
-    dot_surface = pygame.Surface(resolution, pygame.SRCALPHA)
-    offset_x = (resolution[0] - image.size[0]) // 2
-    offset_y = (resolution[1] - image.size[1]) // 2 #calculate the offset to center the image on the screen
+    #process image to dots and displays size of the image
+    dots, img_res = process_image(image_path, grid_size=10)
 
-    #process image to dots
-    dots, resolution = process_image(image_path, grid_size=10)
     art = Art()
     art.dots = dots
+
+    dot_surface = pygame.Surface(img_res, pygame.SRCALPHA)
+
+    offset_x = (screen.get_width() - img_res[0]) // 2
+    offset_y = (screen.get_height() - img_res[1]) // 2 #calculate the offset to center the image on the screen
 
     #main loop to keep the window open and update the dots
     running = True
