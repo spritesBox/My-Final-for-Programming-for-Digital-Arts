@@ -98,17 +98,22 @@ def process_image(image_path, grid_size):
     image = image.resize((new_width, new_height))
     resolution = (new_width, new_height)
     
-    step_x = resolution[0] // grid_size
-    step_y = resolution[1] // grid_size
+    #make steps equal in size to make square pixels no matter the resolution of the image without distorting the image, so find the smaller step size and use that for both x and y
+
+    step = resolution[0] // grid_size #pixel width
+    step_x = step
+    step_y = step
     
+    cols = grid_size
+    rows = resolution[1] // step
    
     dots = []
-    for i in range(grid_size):
-        for j in range(grid_size):
-            x_start = i * step_x
-            y_start = j * step_y
-            x_end = x_start + step_x
-            y_end = y_start + step_y
+    for i in range(cols):
+        for j in range(rows):
+            x_start = i * step
+            y_start = j * step
+            x_end = x_start + step
+            y_end = y_start + step
             #crop the image to get the section for this dot
             box = (x_start, y_start, x_end, y_end)
             section = image.crop(box)
@@ -149,7 +154,7 @@ def main():
     screen = pygame.display.set_mode(resolution)
 
     #process image to dots and displays size of the image
-    dots, img_res = process_image(image_path, grid_size=10)
+    dots, img_res = process_image(image_path, grid_size=20)
 
     art = Art()
     art.dots = dots
