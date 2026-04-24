@@ -23,15 +23,19 @@ from tkinter import Tk, filedialog
 
 #Basic structure for the dot class
 class Dot():
-    def __init__(self, pos=(0,0), size =25, color =(255,0,0)):
-        self.size = size
+    def __init__(self, pos=(0,0), step_x=25, step_y=25, color =(255,0,0)):
+        self.step_x = step_x
+        self.step_y = step_y
         self.pos = pos
         self.age = 0 #in milliseconds
         self.color = color
         self.dead = False
-        self.surface = self.update_surface()
+        self.surface = pygame.Surface((self.step_x, self.step_y), pygame.SRCALPHA)
         self.alpha = 255
-        pygame.draw.circle(self.surface, self.color, (self.size//2, self.size//2), self.size//2)
+
+        radius = min(self.step_x, self.step_y) // 2
+
+        pygame.draw.circle(self.surface, self.color, (self.step_x//2, self.step_y//2), radius)
 
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
@@ -89,11 +93,17 @@ def upload_image():
 def process_image(image_path, grid_size):
     image = Image.open(image_path)
     resolution = image.size
-    surface_size = (resolution[0]//4, resolution[1]//4)
-    step_x = surface_size[0] // grid_size
-    step_y = surface_size[1] // grid_size
-    #want size of dot to be based on the step size, maybe 80% of the step size
-    size =min(step_x, step_y)
+    #dots need to match size of step
+
+    new_width = (resolution[0] // grid_size) * grid_size
+    new_height = (resolution[1] // grid_size) * grid_size
+    image = image.resize((new_width, new_height))
+    resolution = (new_width, new_height)
+    
+    step_x = resolution[0] // grid_size
+    step_y = resolution[1] // grid_size
+    
+   
     dots = []
     for i in range(grid_size):
         for j in range(grid_size):
@@ -105,6 +115,7 @@ def process_image(image_path, grid_size):
             box = (x_start, y_start, x_end, y_end)
             section = image.crop(box)
             pixels = list(section.getdata())
+            size =min(step_x, step_y)
 
 
             #avg the color of the section
@@ -115,10 +126,10 @@ def process_image(image_path, grid_size):
 
 
             #create a dot with the avg color and position it at the center of the section
-            pos = (x_start + step_x//2, y_start + step_y//2)
-            dot = Dot(pos, size, color=avg_color)
+            pos = (x_start, y_start)
+            dot = Dot(pos, size=size, color=avg_color)
             dots.append(dot)
-    return dots
+    return dots, resolution
 
 #main function to create the window and run the program
 def main():
@@ -135,11 +146,16 @@ def main():
     pygame.init()
     pygame.display.init()
     infoObject = pygame.display.Info() 
+    #full screen resolution
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
 
+    dot_surface = pygame.Surface(resolution, pygame.SRCALPHA)
+    offset_x = (resolution[0] - image.size[0]) // 2
+    offset_y = (resolution[1] - image.size[1]) // 2 #calculate the offset to center the image on the screen
+
     #process image to dots
-    dots = process_image(image_path, grid_size=10)
+    dots, resolution = process_image(image_path, grid_size=10)
     art = Art()
     art.dots = dots
 
@@ -159,10 +175,12 @@ def main():
                 running = False
 
         screen.fill((0,0,0))
+        dot_surface.fill((0,0,0,0)) #clear the dot surface with transparency
 
         for dot in art.dots[:]:
             dot.update(dt)
-            dot.draw(screen)
+            dot.draw(dot_surface)
+        screen.blit(dot_surface, (offset_x, offset_y))
 
         pygame.display.flip()
 
