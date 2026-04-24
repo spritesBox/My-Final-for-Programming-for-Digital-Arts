@@ -23,15 +23,15 @@ from tkinter import Tk, filedialog
 
 #Basic structure for the dot class
 class Dot():
-    def __init__(self, pos=(0,0), size =25):
+    def __init__(self, pos=(0,0), size =25, color =(255,0,0)):
         self.size = size
         self.pos = pos
         self.age = 0 #in milliseconds
-        self.color = (255,0,0) #red color for the dots
+        self.color = color
         self.dead = False
         self.surface = self.update_surface()
         self.alpha = 255
-        pygame.draw.circle(self.surface, self.color, (self.size//2, self.size//2), self.size//2, width=8)
+        pygame.draw.circle(self.surface, self.color, (self.size//2, self.size//2), self.size//2)
 
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
@@ -86,15 +86,17 @@ def upload_image():
     #so far does not save the file path
 
 #function to process the image into a grid and avg the colors in each step
-def process_image(image_path, num_dots):
+def process_image(image_path, grid_size):
     image = Image.open(image_path)
     resolution = image.size
     surface_size = (resolution[0]//4, resolution[1]//4)
-    step_x = surface_size[0] // num_dots
-    step_y = surface_size[1] // num_dots
+    step_x = surface_size[0] // grid_size
+    step_y = surface_size[1] // grid_size
+    #want size of dot to be based on the step size, maybe 80% of the step size
+    size =min(step_x, step_y)
     dots = []
-    for i in range(num_dots):
-        for j in range(num_dots):
+    for i in range(grid_size):
+        for j in range(grid_size):
             x_start = i * step_x
             y_start = j * step_y
             x_end = x_start + step_x
@@ -102,12 +104,19 @@ def process_image(image_path, num_dots):
             #crop the image to get the section for this dot
             box = (x_start, y_start, x_end, y_end)
             section = image.crop(box)
+            pixels = list(section.getdata())
+
+
             #avg the color of the section
-            avg_color = section.resize((1,1)).getpixel((0,0))
+            r = sum([pixel[0] for pixel in pixels]) // len(pixels)
+            g = sum([pixel[1] for pixel in pixels]) // len(pixels)
+            b = sum([pixel[2] for pixel in pixels]) // len(pixels)
+            avg_color = (r, g, b)
+
+
             #create a dot with the avg color and position it at the center of the section
             pos = (x_start + step_x//2, y_start + step_y//2)
-            dot = Dot(pos, size=25)
-            dot.color = avg_color
+            dot = Dot(pos, size, color=avg_color)
             dots.append(dot)
     return dots
 
@@ -122,16 +131,18 @@ def main():
     #load the image with Pillow
     image = Image.open(image_path)
 
-    time_interval = 1 # 200 milliseconds == 0.2 seconds
-    next_object_time = 0
-
     #initialize pygame and create the window
     pygame.init()
     pygame.display.init()
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
-    art = process_image()
+
+    #process image to dots
+    dots = process_image(image_path, grid_size=10)
+    art = Art()
+    art.dots = dots
+
     #main loop to keep the window open and update the dots
     running = True
     clock = pygame.time.Clock()
@@ -146,18 +157,6 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
-
-        current_time = pygame.time.get_ticks()
-        if current_time > next_object_time and flag:
-            next_object_time += time_interval
-
-            pos = (random.randint(0, resolution[0]//4),
-                random.randint(0, resolution[1]//4))
-
-            art.dots.append(Dot(pos, 25,))
-            count += 1
-            if count >= limit:
-                flag = False
 
         screen.fill((0,0,0))
 
