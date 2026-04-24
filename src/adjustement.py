@@ -5,8 +5,7 @@ from numpy import size
 import pygame
 import time 
 from PIL import Image
-from tkinter import Tk
-import filedialog
+from tkinter import Tk, filedialog
 
 
 
@@ -86,8 +85,42 @@ def upload_image():
     return file_path
     #so far does not save the file path
 
+#function to process the image into a grid and avg the colors in each step
+def process_image(image_path, num_dots):
+    image = Image.open(image_path)
+    resolution = image.size
+    surface_size = (resolution[0]//4, resolution[1]//4)
+    step_x = surface_size[0] // num_dots
+    step_y = surface_size[1] // num_dots
+    dots = []
+    for i in range(num_dots):
+        for j in range(num_dots):
+            x_start = i * step_x
+            y_start = j * step_y
+            x_end = x_start + step_x
+            y_end = y_start + step_y
+            #crop the image to get the section for this dot
+            box = (x_start, y_start, x_end, y_end)
+            section = image.crop(box)
+            #avg the color of the section
+            avg_color = section.resize((1,1)).getpixel((0,0))
+            #create a dot with the avg color and position it at the center of the section
+            pos = (x_start + step_x//2, y_start + step_y//2)
+            dot = Dot(pos, size=25)
+            dot.color = avg_color
+            dots.append(dot)
+    return dots
+
 #main function to create the window and run the program
 def main():
+    #ask user for image
+    image_path = upload_image()
+    if not image_path:
+        print("No image selected. Exiting.")
+        return
+    
+    #load the image with Pillow
+    image = Image.open(image_path)
 
     time_interval = 1 # 200 milliseconds == 0.2 seconds
     next_object_time = 0
@@ -98,7 +131,7 @@ def main():
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
-    art = Art()
+    art = process_image()
     #main loop to keep the window open and update the dots
     running = True
     clock = pygame.time.Clock()
@@ -133,6 +166,7 @@ def main():
             dot.draw(screen)
 
         pygame.display.flip()
+
 
 
 if __name__ == "__main__":
