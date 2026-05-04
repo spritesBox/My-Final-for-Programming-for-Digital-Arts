@@ -8,9 +8,10 @@ from PIL import Image
 from tkinter import Tk, filedialog
 
 
-
-#User uploads image file
-#The image is processed into a grid by finding resolution
+#TODO: create a program to pixelate the image
+#images are uploaded to src directory
+#All of the image is processed into a grid by finding resolution once
+#guessing_game.py is started by user 
 #dividing the resolution by how many steps
 #1 step = 1 dot
 #avg the colors in each step
@@ -19,6 +20,9 @@ from tkinter import Tk, filedialog
 #replace each step with a dot of that avg color and position
 #the dots will appear 1 by 1 in a random order
 #the dots stay static
+#new pixelated images are saved in a new folder called pixelated_images 
+# with the same name as the original image but with _pixelated at the end of the name
+
 
 
 #Basic structure for the dot class
@@ -121,7 +125,7 @@ def process_image(image_path, grid_size):
             size =min(step_x, step_y)
 
 
-            #avg the color of the section
+            #avg the color of the section and add pixels to list
             r = sum([pixel[0] for pixel in pixels]) // len(pixels)
             g = sum([pixel[1] for pixel in pixels]) // len(pixels)
             b = sum([pixel[2] for pixel in pixels]) // len(pixels)
