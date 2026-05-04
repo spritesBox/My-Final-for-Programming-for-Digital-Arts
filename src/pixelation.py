@@ -79,7 +79,7 @@ class Art():
                 dot.draw(surface)
 
 
-#Function for user to upload image, maybe use tkinter for this and PIL
+#Function to open file dialog and select an image, returns the file path of the selected image
 def upload_image():
     root = Tk()
     root.withdraw() #hide the root window
