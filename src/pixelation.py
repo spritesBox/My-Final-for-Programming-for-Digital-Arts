@@ -6,6 +6,7 @@ import pygame
 import time 
 from PIL import Image
 from tkinter import Tk, filedialog
+import os
 
 
 #TODO: create a program to pixelate the image
@@ -79,17 +80,13 @@ class Art():
                 dot.draw(surface)
 
 
-#Function to open file dialog and select an image, returns the file path of the selected image
-def upload_image():
-    root = Tk()
-    root.withdraw() #hide the root window
-    file_path = filedialog.askopenfilename(
-        title = "Select an image file",
-        filetypes = [("Image files", "*.jpg *.jpeg *.png *.bmp *.gif")]
-    ) #open file dialog to select image
-    root.destroy() #destroy the root window after file is selected
-    return file_path
-    #so far does not save the file path
+#Function to open file dialog and select an image from choosen_image directory
+#returns the file path of the selected image
+def open_file_dialog():
+    for image in os.listdir("choosen_images"): #do this for every image in directory
+        if image.endswith((".png", ".jpg", ".jpeg")):
+            image_path = os.path.join("choosen_images", image)
+            return image_path
 
 #function to process the image into a grid and avg the colors in each step
 def process_image(image_path, grid_size):
