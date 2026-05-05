@@ -2,6 +2,7 @@ from email.mime import image
 import os
 import glob
 import random
+import pygame
 
 
 #TODO: create a mini game where player guesses what the item is based on pixelated images
@@ -95,6 +96,32 @@ def main():
     :rtype: None 
     
     """
+    # Load pixelated images and initialize game variables
+    image_paths = load_pixelated_images()
+
+    # Main game loop
+    pygame.init()
+    pygame.display.set_caption("Guessing Game")
+    screen = pygame.display.set_mode((800, 600))
+
+    #even loop
+    running = #True
+
+    #correct = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
+    #incorrect = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+            # Handle user input for guessing the image here
+
+            # Display the current pixelated image and answer choices here
+            # if correct, display "Correct!" and move to the next image; if incorrect, display "Wrong!" 
+            # and end the game  
 
 
 
