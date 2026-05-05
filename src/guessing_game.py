@@ -26,7 +26,15 @@ def open_file_dialog():
     :return: The file path of the selected image.
     :rtype: str
 
+    :param list_of_images: A list of file paths to the pixelated images available for selection.
+    :type list_of_images: list of str
+
     """
+    for image in os.listdir("pixelated_images"): #do this for every image in directory
+        if image.endswith((".png", ".jpg", ".jpeg")):
+            image_path = os.path.join("pixelated_images", image)
+            return image_path
+
 
 def load_pixelated_images(directory="pixelated_images"):
     """Load the pixelated images from the specified directory.
@@ -38,7 +46,18 @@ def load_pixelated_images(directory="pixelated_images"):
     :rtype: list of str
     """
 
+def correct_incorrect_guess(user_input, correct_answer):
+    """Check if the user's guess is correct and return the appropriate response.
 
+    :param user_input: The user's guess for the image.
+    :type user_input: str
+
+    :param correct_answer: The correct answer corresponding to the image.
+    :type correct_answer: str
+
+    :return: A message indicating whether the user's guess is correct or incorrect.
+    :rtype: str
+    """
 
 def main(): 
     
@@ -48,8 +67,6 @@ def main():
     :return: None
     :rtype: None 
     
-    :param user_input: The user's guess for the image. This is obtained through a text input mechanism 
-    :type user_input: str
     """
 
 
