@@ -1,4 +1,5 @@
-
+import os
+import glob
 
 
 #TODO: create a mini game where player guesses what the item is based on pixelated images
@@ -15,4 +16,43 @@
 #9. after player guesses all images correctly, display "congratulations, you guessed all the images!" 
 #10. game ends
 
+def open_file_dialog():
+    
+    """Open a file dialog to select an image from the pixelated_images directory and return the file path.
+
+    :param directory: The directory to open the file dialog in. Defaults to "pixelated_images".
+    :type directory: str, optional
+
+    :return: The file path of the selected image.
+    :rtype: str
+
+    """
+
+def load_pixelated_images(directory="pixelated_images"):
+    """Load the pixelated images from the specified directory.
+
+    :param directory: The directory containing the pixelated images.
+    :type directory: str, optional
+
+    :return: A list of file paths to the pixelated images.
+    :rtype: list of str
+    """
+
+
+
+def main(): 
+    
+    """ function to run the guessing  and display the images. 
+    This function initializes the game, displays pixelated images, and handles user input for guessing the images.
+
+    :return: None
+    :rtype: None 
+    
+    :param user_input: The user's guess for the image. This is obtained through a text input mechanism 
+    :type user_input: str
+    """
+
+
+if __name__ == "__main__":
+    main()
 
