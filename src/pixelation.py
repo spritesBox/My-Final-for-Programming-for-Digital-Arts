@@ -4,7 +4,7 @@ from numpy import size
 from numpy import size
 import pygame
 import time 
-from PIL import Image
+from PIL import Image, ImageDraw
 from tkinter import Tk, filedialog
 import os
 import glob
@@ -109,15 +109,16 @@ def process_image(image_path, grid_size, folder_path = "chosen_images"):
     cols = grid_size
     rows = resolution[1] // step
 
-    #folder path
+    #prepare output folder
     folder_path = os.path.normpath(folder_path)
-
     #folder name
     folder_name = os.path.basename(folder_path)
-    #extract original prefix
-    prefix = folder_name.split("_")[0]
-    new_folder_name = f"pixelated_images" #f"{prefix}_pixelated"
+    new_folder_name = "pixelated_images" 
+    new_folder_path = os.path.join(os.path.dirname(folder_path), new_folder_name)
+    os.makedirs(new_folder_path, exist_ok=True)
    
+    pixel_art = Image.new("RGB", resolution)
+    draw = ImageDraw.Draw(pixel_art)
     dots = []
     for i in range(cols):
         for j in range(rows):
@@ -138,26 +139,31 @@ def process_image(image_path, grid_size, folder_path = "chosen_images"):
             b = sum([pixel[2] for pixel in pixels]) // len(pixels)
             avg_color = (r, g, b)
 
+            draw.rectangle(box, fill=avg_color)
 
             #create a dot with the avg color and position it at the center of the section
             pos = (x_start, y_start)
             dot = Dot(pos, step_x=step_x, step_y=step_y, color=avg_color)
             dots.append(dot)
 
-            #save the procesed image in a new folder called pixelated_images 
-            #with the same name as the original image but with _pixelated at the end of the name
+    #save the procesed image in a new folder called pixelated_images 
+    #with the same name as the original image but with _pixelated at the end of the name
 
-            #create new folder if it doesn't exist
-            new_folder_path = os.path.join(os.path.dirname(folder_path), new_folder_name)
-            os.makedirs(new_folder_path, exist_ok=True)
+    #create new folder if it doesn't exist
+    new_folder_path = os.path.join(os.path.dirname(folder_path), new_folder_name)
+    os.makedirs(new_folder_path, exist_ok=True)
 
-            #save the pixelated image in the new folder
-            img_name = os.path.basename(image_path)
-            #renames the image's name to reflect the pixelation version (e.g., "image.png" -> "image_pixelated.png")
-            new_img_path = os.path.join(new_folder_path, img_name.replace(folder_name, new_folder_name))
-            image.save(new_img_path)
+    #save the pixelated image in the new folder
+    img_name = os.path.basename(image_path)
+
+    #prefix the new image name with the original name without the extension and add _pixelated at the end
+    new_img_name = img_name.rsplit('.', 1)[0] + "_pixelated." + img_name.rsplit('.', 1)[1]
+
+    #renames the image's name to reflect the pixelation version (e.g., "image.png" -> "image_pixelated.png")
+    new_img_path = os.path.join(new_folder_path, new_img_name)
+    pixel_art.save(new_img_path)
+
     return dots, resolution
-
 
 #main function to create the window and run the program
 def main():
@@ -204,7 +210,6 @@ def main():
         screen.blit(dot_surface, (offset_x, offset_y))
 
         pygame.display.flip()
-
 
 
 if __name__ == "__main__":
