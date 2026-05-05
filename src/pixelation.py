@@ -7,6 +7,7 @@ import time
 from PIL import Image
 from tkinter import Tk, filedialog
 import os
+import glob
 
 
 #TODO: create a program to pixelate the image
@@ -83,13 +84,13 @@ class Art():
 #Function to open file dialog and select an image from choosen_image directory
 #returns the file path of the selected image
 def open_file_dialog():
-    for image in os.listdir("choosen_images"): #do this for every image in directory
+    for image in os.listdir("chosen_images"): #do this for every image in directory
         if image.endswith((".png", ".jpg", ".jpeg")):
-            image_path = os.path.join("choosen_images", image)
+            image_path = os.path.join("chosen_images", image)
             return image_path
 
 #function to process the image into a grid and avg the colors in each step
-def process_image(image_path, grid_size):
+def process_image(image_path, grid_size, folder_path = "chosen_images"):
     image = Image.open(image_path)
     resolution = image.size
     #dots need to match size of step
@@ -107,6 +108,15 @@ def process_image(image_path, grid_size):
     
     cols = grid_size
     rows = resolution[1] // step
+
+    #folder path
+    folder_path = os.path.normpath(folder_path)
+
+    #folder name
+    folder_name = os.path.basename(folder_path)
+    #extract original prefix
+    prefix = folder_name.split("_")[0]
+    new_folder_name = f"pixelated_images" #f"{prefix}_pixelated"
    
     dots = []
     for i in range(cols):
@@ -133,18 +143,25 @@ def process_image(image_path, grid_size):
             pos = (x_start, y_start)
             dot = Dot(pos, step_x=step_x, step_y=step_y, color=avg_color)
             dots.append(dot)
+
+            #save the procesed image in a new folder called pixelated_images 
+            #with the same name as the original image but with _pixelated at the end of the name
+
+            #create new folder if it doesn't exist
+            new_folder_path = os.path.join(os.path.dirname(folder_path), new_folder_name)
+            os.makedirs(new_folder_path, exist_ok=True)
+
+            #save the pixelated image in the new folder
+            img_name = os.path.basename(image_path)
+            #renames the image's name to reflect the pixelation version (e.g., "image.png" -> "image_pixelated.png")
+            new_img_path = os.path.join(new_folder_path, img_name.replace(folder_name, new_folder_name))
+            image.save(new_img_path)
     return dots, resolution
+
 
 #main function to create the window and run the program
 def main():
-    #ask user for image
-    image_path = upload_image()
-    if not image_path:
-        print("No image selected. Exiting.")
-        return
-    
-    #load the image with Pillow
-    image = Image.open(image_path)
+    image_path = open_file_dialog()
 
     #initialize pygame and create the window
     pygame.init()
@@ -168,9 +185,7 @@ def main():
     #main loop to keep the window open and update the dots
     running = True
     clock = pygame.time.Clock()
-    limit = 25 #limit the number of dots on the screen to 25
-    count = 0
-    flag = True
+    
     while running:
         dt = clock.tick(60)
 
