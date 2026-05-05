@@ -1,5 +1,7 @@
+from email.mime import image
 import os
 import glob
+import random
 
 
 #TODO: create a mini game where player guesses what the item is based on pixelated images
@@ -45,9 +47,16 @@ def load_pixelated_images(directory="pixelated_images"):
     :return: A list of file paths to the pixelated images.
     :rtype: list of str
     """
+    image_paths = []
+    for image in os.listdir(directory):
+        if image.endswith((".png", ".jpg", ".jpeg")):
+            image_path = os.path.join(directory, image)
+            image_paths.append(image_path)
+    return image_paths
 
 def correct_incorrect_guess(user_input, correct_answer):
     """Check if the user's guess is correct and return the appropriate response.
+    Display multiple choices for the user to select from for each image
 
     :param user_input: The user's guess for the image.
     :type user_input: str
@@ -58,7 +67,25 @@ def correct_incorrect_guess(user_input, correct_answer):
     :return: A message indicating whether the user's guess is correct or incorrect.
     :rtype: str
     """
+    #create list of possible answers for program to randomly select from, including the correct answer and some incorrect answers
 
+    incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
+    #randomly select 3 incorrect answers from the list of incorrect answers
+    selected_incorrect_answers = random.sample(incorrect_answers, 3)
+    #combine the correct answer with the selected incorrect answers and shuffle the list
+    answer_choices = [correct_answer] + selected_incorrect_answers
+
+    
+    for image in random.os.listdir("pixelated_images", 5): #do this for random images in directory in range 5
+        if image.endswith((".png", ".jpg", ".jpeg")):
+            if image.startswith(correct_answer):
+                correct_answer = image.split(".")[0] #get the name of the item in the image without the file extension
+                if user_input.lower() == correct_answer.lower():
+                    return "Correct!"
+                else:
+                    return "Wrong! The correct answer was: " + correct_answer
+
+        
 def main(): 
     
     """ function to run the guessing  and display the images. 
@@ -68,6 +95,8 @@ def main():
     :rtype: None 
     
     """
+
+
 
 
 if __name__ == "__main__":
