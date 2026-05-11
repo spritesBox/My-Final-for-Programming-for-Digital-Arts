@@ -159,6 +159,7 @@ def main():
     
     
     idx = 0
+    user_input = ""
     current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
     #event loop
     correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
@@ -166,34 +167,45 @@ def main():
     running = True
 
     while running:
+
+        screen.fill((0,0,0))
+        screen.blit(current_image, (x,y))
         buttons = button_design(screen, answer_choices, font)
+        pygame.display.flip()
+
         for event in pygame.event.get():
+        # draw image and buttons first so rects exist
+            
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-                    
-                 # Backspace deletes
+
                 elif event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]
+
+                elif hasattr(event, "unicode") and event.unicode.isprintable():
+                    user_input += event.unicode
+    
             # Handle user input for gues
             # sing the image here
             # Display the current pixelated image and answer choices here
             # if correct, display "Correct!" and move to the next image; if incorrect, display "Wrong!" 
             # and end the game  
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mx, my = event.pos
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = event.pos
 
-                    for i, rect in enumerate(buttons):
-                        if rect.collidepoint(mx, my):
-                            user_choice = answer_choices[i]
+                for i, rect in enumerate(buttons):
+                    if rect.collidepoint(mx, my):
+                        user_choice = answer_choices[i]
                     
-                            result = correct_incorrect_guess(user_choice, correct_answer)
+                        result, _ = correct_incorrect_guess(user_choice, correct_answer)
 
                         if result == "Correct!":
                             idx += 1
                             print(result)
+
                             if idx >= len(image_paths): #if there are more images to go through
                                 #call rain.py confetti burst, but for now...
                                 print ("Congradulations! You beat the Game!")
@@ -207,20 +219,14 @@ def main():
                             print(result)
                             time.sleep(3)
                             running = False
+
+                        break
                 
                 # Normal typing
                 else:
                     if hasattr(event, "unicode") and event.unicode.isprintable():
                         user_input += event.unicode
                     
-
-        screen.fill((0,0,0))
-        screen.blit(current_image, (x,y))
-        buttons = button_design(screen, answer_choices, font)
-        pygame.display.flip()
-
-        
-
 
 if __name__ == "__main__":
     main()
