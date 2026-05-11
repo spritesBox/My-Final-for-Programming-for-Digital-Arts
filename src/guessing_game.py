@@ -70,7 +70,6 @@ def correct_incorrect_guess(user_input, correct_answer):
     :rtype: str
     """
     #create list of possible answers for program to randomly select from, including the correct answer and some incorrect answers
-    user_input = input("")
     incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
     #randomly select 3 incorrect answers from the list of incorrect answers
     selected_incorrect_answers = random.sample(incorrect_answers, 3)
@@ -110,7 +109,38 @@ def rescale_image(path):
     y = (screen_h - img_h)//2
 
     return img, img_w, img_h, x, y
-        
+
+def button_design(size, font, bg_color, txt_color):
+    #button properties
+    buttons = []
+    button_height = 80
+    button_width = 500
+    spacing = 10
+    bg_color = (255,255,255)
+    start_y = screen_h - (button_height * 4 + spacing * 3) - 80
+    x = (screen_w - button_width)//2
+
+    #full screen resolution
+    infoObject = pygame.display.Info()
+    resolution = (infoObject.current_w, infoObject.current_h)
+    screen = pygame.display.set_mode(resolution)
+    screen_w, screen_h = screen.get_size()
+
+    for i, text in enumerate(answer_choices):
+        y = start_y + i * (button_height + spacing)
+        rect = pygame.Rect(x, y, button_width, button_height)
+
+        pygame.draw.rect(screen, (255, 255, 255), rect, border_radius=12)
+        pygame.draw.rect(screen, (0, 0, 0), rect, 3, border_radius=12)
+
+        label = font.render(text, True, (0, 0, 0))
+        label_rect = label.get_rect(center=rect.center)
+        screen.blit(label, label_rect)
+
+        buttons.append(rect)
+
+    return buttons
+
 def main(): 
     
     """ function to run the guessing  and display the images. 
@@ -130,6 +160,7 @@ def main():
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
+    
     
     idx = 0
     current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
@@ -154,7 +185,12 @@ def main():
             # Display the current pixelated image and answer choices here
             # if correct, display "Correct!" and move to the next image; if incorrect, display "Wrong!" 
             # and end the game  
-                elif event.key == pygame.K_RETURN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mx, my = event.pos
+
+                for i, rect in enumerate(buttons):
+                    if rect.collidepoint(mx, my):
+                        user_choice = choices[i]
                     correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
                     result, choices = correct_incorrect_guess(user_input, correct_answer)
 
@@ -186,8 +222,6 @@ def main():
         screen.fill((0,0,0))
         screen.blit(current_image, (x,y))
         pygame.display.flip()
-
-
 
 
 if __name__ == "__main__":
