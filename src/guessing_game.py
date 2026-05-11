@@ -70,7 +70,7 @@ def correct_incorrect_guess(user_input, correct_answer):
     :rtype: str
     """
     #create list of possible answers for program to randomly select from, including the correct answer and some incorrect answers
-
+    user_input = input("")
     incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
     #randomly select 3 incorrect answers from the list of incorrect answers
     selected_incorrect_answers = random.sample(incorrect_answers, 3)
@@ -85,32 +85,31 @@ def correct_incorrect_guess(user_input, correct_answer):
 
     return result, answer_choices
 
-def rescale_image(path)
+def rescale_image(path):
     image_paths = load_pixelated_images()
+    img = pygame.image.load(path)
 
     #full screen resolution
-    infoObject = pygame.display.info()
+    infoObject = pygame.display.Info()
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
     screen_w, screen_h = screen.get_size()
 
     #resize image to fit screen
-    idx = 0
-    current_image = pygame.image.load(image_paths[idx])
-    img_w, img_h = current_image.get_size()
+    img_w, img_h = img.get_size()
     scale = min(screen_w/img_w, screen_h/img_h, 1)
     new_w = int(img_w * scale)
     new_h = int(img_h * scale)
 
     if scale < 1:
-        current_image = pygame.transform.scale(current_image, (new_w, new_h))
+        img = pygame.transform.scale(img, (new_w, new_h))
         img_w, img_h = new_w, new_h
 
     #center image to screen
     x = (screen_w - img_w)//2
     y = (screen_h - img_h)//2
 
-    return current_image, img_w, img_h, x, y, 
+    return img, img_w, img_h, x, y
         
 def main(): 
     
@@ -132,7 +131,7 @@ def main():
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
     
-
+    idx = 0
     current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
     #event loop
     user_input = " "
@@ -174,7 +173,7 @@ def main():
                         running = False
                     else:
                         #change current image to next in the list
-                        current_image = pygame.image.load(image_paths[idx])
+                        current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
                     
                     user_input = ""
                 
