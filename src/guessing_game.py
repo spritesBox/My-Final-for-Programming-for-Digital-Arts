@@ -164,7 +164,8 @@ def main():
     user_input = ""
     current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
     #event loop
-    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+    filename = os.path.basename(image_paths[idx]).split(".")[0]
+    correct_answer = filename.replace("_pixelated", "")
     result, answer_choices = correct_incorrect_guess("", correct_answer)
     running = True
 
@@ -214,6 +215,7 @@ def main():
                                 running = False
                                 break
                             current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
+                            filename = os.path.basename(image_paths[idx]).split(".")[0]
                             correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
                             result, answer_choices = correct_incorrect_guess("", correct_answer)
 
