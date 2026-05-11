@@ -92,9 +92,9 @@ def rescale_image(path):
     infoObject = pygame.display.Info()
     screen_w, screen_h = infoObject.current_w, infoObject.current_h
 
-    #resize image to fit screen
+    #resize image to fit screen but still be close up
     img_w, img_h = img.get_size()
-    scale = min(screen_w/img_w, screen_h/img_h, 1)
+    scale = min(screen_w/img_w, screen_h/img_h, 1) * 2
     new_w = int(img_w * scale)
     new_h = int(img_h * scale)
 
@@ -104,7 +104,7 @@ def rescale_image(path):
 
     #center image to screen
     x = (screen_w - img_w)//2
-    y = (screen_h - img_h)//2
+    y = (screen_h - img_h)//4
 
     return img, img_w, img_h, x, y
 

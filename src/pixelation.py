@@ -177,7 +177,19 @@ def main():
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
 
-    #process image to dots and displays size of the image
+    
+    folder = "chosen_images"
+    images = [f for f in os.listdir(folder) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
+
+    if not images:
+        print("No images found in chosen_images/")
+        return
+
+    print(f"Found {len(images)} images. Pixelating all...")
+
+    for img in images:
+        image_path = os.path.join(folder, img)
+        print(f"Processing: {img}")
     dots, img_res = process_image(image_path, grid_size=20)
 
     art = Art()
