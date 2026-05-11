@@ -27,7 +27,7 @@ import glob
 
 
 
-#Basic structure for the dot class
+#Basic structure for the pixel class
 class Dot():
     def __init__(self, pos=(0,0), step_x=25, step_y=25, color =(255,0,0)):
         self.step_x = step_x

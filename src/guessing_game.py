@@ -1,8 +1,9 @@
-from email.mime import image
+#from email.mime import image
 import os
 import glob
 import random
 import pygame
+import time
 
 
 #TODO: create a mini game where player guesses what the item is based on pixelated images
@@ -72,11 +73,12 @@ def correct_incorrect_guess(user_input, correct_answer):
 
     incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
     #randomly select 3 incorrect answers from the list of incorrect answers
+
     selected_incorrect_answers = random.sample(incorrect_answers, 3)
     #combine the correct answer with the selected incorrect answers and shuffle the list
     answer_choices = [correct_answer] + selected_incorrect_answers
+    random.shuffle(answer_choices)
 
-    
     for image in random.os.listdir("pixelated_images", 5): #do this for random images in directory in range 5
         if image.endswith((".png", ".jpg", ".jpeg")):
             if image.startswith(correct_answer):
@@ -104,11 +106,14 @@ def main():
     pygame.display.set_caption("Guessing Game")
     screen = pygame.display.set_mode((800, 600))
 
-    #even loop
-    running = #True
-
+    #event loop
+    idx = 0
+    current_image = pygame.image.load(image_paths[idx])
+    user_input = " "
+    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+    result = correct_incorrect_guess(user_input, correct_answer)
     #correct = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
-    #incorrect = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
+    running = True
 
     while running:
         for event in pygame.event.get():
@@ -117,11 +122,34 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-            # Handle user input for guessing the image here
-
+            # Handle user input for gues
+            # sing the image here
             # Display the current pixelated image and answer choices here
             # if correct, display "Correct!" and move to the next image; if incorrect, display "Wrong!" 
             # and end the game  
+                elif event.key == pygame.K_RETURN:
+                    if result == "Correct!":
+                        idx += 1
+                        print(result)
+                    if idx >= len(image_paths): #if there are more images to go through
+                        #call rain.py confetti burst, but for now...
+                        print ("Congradulations! You beat the Game!")
+                    elif result == "Wrong! The correct answer was: " + correct_answer:
+                        print(result)
+                        time.sleep(3)
+                        running = False
+                    else:
+                        #change current image to next in the list
+                        current_image = pygame.image.load(image_paths[idx])
+                        
+                #if user chooses something not permitted
+                else: 
+                    user_input += event.unicode
+                    
+
+        screen.fill((0,0,0))
+        screen.blit(current_image, (100, 100))
+        pygame.display.flip()
 
 
 
