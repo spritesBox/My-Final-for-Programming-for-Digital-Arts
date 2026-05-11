@@ -117,7 +117,8 @@ def button_design(screen, answer_choices, font):
     button_height = 80
     button_width = 500
     spacing = 10
-    bg_color = (255,255,255)
+    bg_color = (255,220,100)
+    txt_color = (0,0,0)
     start_y = screen_h - (button_height * 4 + spacing * 3) - 80
     x = (screen_w - button_width)//2
 
@@ -125,10 +126,9 @@ def button_design(screen, answer_choices, font):
         y = start_y + i * (button_height + spacing)
         rect = pygame.Rect(x, y, button_width, button_height)
 
-        pygame.draw.rect(screen, (255, 255, 255), rect, border_radius=12)
-        pygame.draw.rect(screen, (0, 0, 0), rect, 3, border_radius=12)
+        pygame.draw.rect(screen, bg_color, rect, border_radius=12)
 
-        label = font.render(text, True, (0, 0, 0))
+        label = font.render(text, True, txt_color)
         label_rect = label.get_rect(center=rect.center)
         screen.blit(label, label_rect)
 
