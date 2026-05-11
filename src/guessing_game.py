@@ -78,8 +78,6 @@ def correct_incorrect_guess(user_input, correct_answer):
     answer_choices = [correct_answer] + selected_incorrect_answers
     random.shuffle(answer_choices)
 
-
-
     if user_input.lower() == correct_answer.lower():
         result = "Correct!"
     else:
@@ -87,25 +85,11 @@ def correct_incorrect_guess(user_input, correct_answer):
 
     return result, answer_choices
 
-        
-def main(): 
-    
-    """ function to run the guessing  and display the images. 
-    This function initializes the game, displays pixelated images, and handles user input for guessing the images.
-
-    :return: None
-    :rtype: None 
-    
-    """
-    # Load pixelated images and initialize game variables
+def rescale_image(path)
     image_paths = load_pixelated_images()
-    random.shuffle(image_paths)
 
-    # screen scale
-    pygame.init()
-    pygame.display.set_caption("Guessing Game")
-    infoObject = pygame.display.Info() 
     #full screen resolution
+    infoObject = pygame.display.info()
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
     screen_w, screen_h = screen.get_size()
@@ -126,10 +110,32 @@ def main():
     x = (screen_w - img_w)//2
     y = (screen_h - img_h)//2
 
+    return current_image, img_w, img_h, x, y, 
+        
+def main(): 
+    
+    """ function to run the guessing  and display the images. 
+    This function initializes the game, displays pixelated images, and handles user input for guessing the images.
+
+    :return: None
+    :rtype: None 
+    
+    """
+    # Load pixelated images and initialize game variables
+    image_paths = load_pixelated_images()
+    random.shuffle(image_paths)
+
+    # screen scale
+    pygame.init()
+    pygame.display.set_caption("Guessing Game")
+    infoObject = pygame.display.Info() 
+    resolution = (infoObject.current_w, infoObject.current_h)
+    screen = pygame.display.set_mode(resolution)
+    
+
+    current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
     #event loop
     user_input = " "
-    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
-    result = correct_incorrect_guess(user_input, correct_answer)
     #correct = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
     running = True
 
@@ -140,12 +146,22 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                    
+                 # Backspace deletes
+                elif event.key == pygame.K_BACKSPACE:
+                    user_input = user_input[:-1]
             # Handle user input for gues
             # sing the image here
             # Display the current pixelated image and answer choices here
             # if correct, display "Correct!" and move to the next image; if incorrect, display "Wrong!" 
             # and end the game  
                 elif event.key == pygame.K_RETURN:
+                    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+                    result, choices = correct_incorrect_guess(user_input, correct_answer)
+
+                    print(result)
+                    print("Choices:", choices)
+
                     if result == "Correct!":
                         idx += 1
                         print(result)
@@ -159,10 +175,13 @@ def main():
                     else:
                         #change current image to next in the list
                         current_image = pygame.image.load(image_paths[idx])
-                        
-                #if user chooses something not permitted
-                else: 
-                    user_input += event.unicode
+                    
+                    user_input = ""
+                
+                # Normal typing
+                else:
+                    if hasattr(event, "unicode") and event.unicode.isprintable():
+                        user_input += event.unicode
                     
 
         screen.fill((0,0,0))
