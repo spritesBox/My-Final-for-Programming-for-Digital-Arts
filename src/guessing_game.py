@@ -168,6 +168,7 @@ def main():
     correct_answer = filename.replace("_pixelated", "")
     result, answer_choices = correct_incorrect_guess("", correct_answer)
     running = True
+    gameover = False
 
     while running:
 
@@ -178,6 +179,8 @@ def main():
 
         for event in pygame.event.get():
         # draw image and buttons first so rects exist
+            if gameover:
+                continue
             
             if event.type == pygame.QUIT:
                 running = False
@@ -232,11 +235,20 @@ def main():
                             result, answer_choices = correct_incorrect_guess("", correct_answer)
 
                         elif result == "Wrong! The correct answer was: " + correct_answer:
-                            print(result)
-                            time.sleep(3)
-                            running = False
+                            lose_font = pygame.font.SysFont(None, 120)
+                            lose_text = lose_font.render("WRONG", True, (255, 255, 255)) 
+                            
+                            # Center the text
+                            text_rect = lose_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
 
-                        break
+                            # Draw the screen
+                            screen.fill((0, 0, 0))
+                            screen.blit(lose_text, text_rect)
+                            pygame.display.flip()
+
+                            gameover = True
+                            pygame.time.delay(2000)
+                            running = False
                 
                 # Normal typing
                 else:
