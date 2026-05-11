@@ -115,15 +115,17 @@ def button_design(screen, answer_choices, font):
     #button properties
     buttons = []
     button_height = 80
-    button_width = 500
+    button_width = 300
     spacing = 10
     bg_color = (255,220,100)
     txt_color = (0,0,0)
-    start_y = screen_h - (button_height * 4 + spacing * 3) - 80
-    x = (screen_w - button_width)//2
+
+    total_width = 4 * button_width + 3 * spacing
+    start_x = (screen_w - total_width) // 2
+    y = 40
 
     for i, text in enumerate(answer_choices):
-        y = start_y + i * (button_height + spacing)
+        x = start_x + i * (button_width + spacing)
         rect = pygame.Rect(x, y, button_width, button_height)
 
         pygame.draw.rect(screen, bg_color, rect, border_radius=12)
