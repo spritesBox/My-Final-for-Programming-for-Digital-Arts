@@ -84,10 +84,11 @@ class Art():
 #Function to open file dialog and select an image from choosen_image directory
 #returns the file path of the selected image
 def open_file_dialog():
-    for image in os.listdir("chosen_images"): #do this for every image in directory
-        if image.endswith((".png", ".jpg", ".jpeg")):
-            image_path = os.path.join("chosen_images", image)
-            return image_path
+    images = []
+    for image in os.listdir("chosen_images"):
+        if image.lower().endswith((".png", ".jpg", ".jpeg")):
+            images.append(os.path.join("chosen_images", image))
+    return images
 
 #function to process the image into a grid and avg the colors in each step
 def process_image(image_path, grid_size, folder_path = "chosen_images"):
@@ -178,19 +179,17 @@ def main():
     screen = pygame.display.set_mode(resolution)
 
     
-    folder = "chosen_images"
-    images = [f for f in os.listdir(folder) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
+    image_paths = open_file_dialog()
 
-    if not images:
+    if not image_paths:
         print("No images found in chosen_images/")
         return
 
-    print(f"Found {len(images)} images. Pixelating all...")
+    print(f"Found {len(image_paths)} images. Pixelating all...")
 
-    for img in images:
-        image_path = os.path.join(folder, img)
-        print(f"Processing: {img}")
-    dots, img_res = process_image(image_path, grid_size=20)
+    for image_path in image_paths:
+        print(f"Processing: {os.path.basename(image_path)}")
+        dots, img_res = process_image(image_path, grid_size=10)
 
     art = Art()
     art.dots = dots

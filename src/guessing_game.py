@@ -104,7 +104,7 @@ def rescale_image(path):
 
     #center image to screen
     x = (screen_w - img_w)//2
-    y = (screen_h - img_h)//4
+    y = (screen_h - img_h)//2
 
     return img, img_w, img_h, x, y
 
@@ -211,12 +211,24 @@ def main():
 
                             if idx >= len(image_paths): #if there are more images to go through
                                 #call rain.py confetti burst, but for now...
-                                print ("Congradulations! You beat the Game!")
-                                running = False
+                                # Render "End Game" on screen
+                                end_font = pygame.font.SysFont(None, 120)
+                                end_text = end_font.render("CONGRADULATIONS YOU WIN!", True, (255, 255, 255))
+
+                                # Center the text
+                                text_rect = end_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+
+                                # Draw final screen
+                                screen.fill((0, 0, 0))
+                                screen.blit(end_text, text_rect)
+                                pygame.display.flip()
+
+                                # Pause so player can see it
+                                pygame.time.delay(3000)
                                 break
                             current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
                             filename = os.path.basename(image_paths[idx]).split(".")[0]
-                            correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+                            correct_answer = filename.replace("_pixelated", "")
                             result, answer_choices = correct_incorrect_guess("", correct_answer)
 
                         elif result == "Wrong! The correct answer was: " + correct_answer:
