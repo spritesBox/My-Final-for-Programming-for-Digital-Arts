@@ -107,18 +107,26 @@ def main():
     infoObject = pygame.display.Info() 
     #full screen resolution
     resolution = (infoObject.current_w, infoObject.current_h)
-    screen = pygame.display.set_mode(resolution//2)
-    screen_w, screen_h = screen.get_size
+    screen = pygame.display.set_mode(resolution)
+    screen_w, screen_h = screen.get_size()
 
     #resize image to fit screen
+    idx = 0
     current_image = pygame.image.load(image_paths[idx])
-    w, h = current_image.get_size()
-    scale = min(screen_w/w, screen_h/h, 1)
+    img_w, img_h = current_image.get_size()
+    scale = min(screen_w/img_w, screen_h/img_h, 1)
     new_w = int(img_w * scale)
     new_h = int(img_h * scale)
 
+    if scale < 1:
+        current_image = pygame.transform.scale(current_image, (new_w, new_h))
+        img_w, img_h = new_w, new_h
+
+    #center image to screen
+    x = (screen_w - img_w)//2
+    y = (screen_h - img_h)//2
+
     #event loop
-    idx = 0
     user_input = " "
     correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
     result = correct_incorrect_guess(user_input, correct_answer)
@@ -158,7 +166,7 @@ def main():
                     
 
         screen.fill((0,0,0))
-        screen.blit(current_image, (100, 100))
+        screen.blit(current_image, (x,y))
         pygame.display.flip()
 
 
