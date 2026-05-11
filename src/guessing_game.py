@@ -73,20 +73,19 @@ def correct_incorrect_guess(user_input, correct_answer):
 
     incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
     #randomly select 3 incorrect answers from the list of incorrect answers
-
     selected_incorrect_answers = random.sample(incorrect_answers, 3)
     #combine the correct answer with the selected incorrect answers and shuffle the list
     answer_choices = [correct_answer] + selected_incorrect_answers
     random.shuffle(answer_choices)
 
-    for image in random.os.listdir("pixelated_images", 5): #do this for random images in directory in range 5
-        if image.endswith((".png", ".jpg", ".jpeg")):
-            if image.startswith(correct_answer):
-                correct_answer = image.split(".")[0] #get the name of the item in the image without the file extension
-                if user_input.lower() == correct_answer.lower():
-                    return "Correct!"
-                else:
-                    return "Wrong! The correct answer was: " + correct_answer
+
+
+    if user_input.lower() == correct_answer.lower():
+        result = "Correct!"
+    else:
+        result = f"Wrong! The correct answer was: {correct_answer}"
+
+    return result, answer_choices
 
         
 def main(): 
@@ -100,15 +99,26 @@ def main():
     """
     # Load pixelated images and initialize game variables
     image_paths = load_pixelated_images()
+    random.shuffle(image_paths)
 
-    # Main game loop
+    # screen scale
     pygame.init()
     pygame.display.set_caption("Guessing Game")
-    screen = pygame.display.set_mode((800, 600))
+    infoObject = pygame.display.Info() 
+    #full screen resolution
+    resolution = (infoObject.current_w, infoObject.current_h)
+    screen = pygame.display.set_mode(resolution//2)
+    screen_w, screen_h = screen.get_size
+
+    #resize image to fit screen
+    current_image = pygame.image.load(image_paths[idx])
+    w, h = current_image.get_size()
+    scale = min(screen_w/w, screen_h/h, 1)
+    new_w = int(img_w * scale)
+    new_h = int(img_h * scale)
 
     #event loop
     idx = 0
-    current_image = pygame.image.load(image_paths[idx])
     user_input = " "
     correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
     result = correct_incorrect_guess(user_input, correct_answer)
