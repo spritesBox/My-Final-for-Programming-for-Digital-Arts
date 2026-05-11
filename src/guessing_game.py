@@ -56,7 +56,7 @@ def load_pixelated_images(directory="pixelated_images"):
             image_paths.append(image_path)
     return image_paths
 
-def correct_incorrect_guess(user_input, correct_answer):
+def correct_incorrect_guess(user_choice, correct_answer):
     """Check if the user's guess is correct and return the appropriate response.
     Display multiple choices for the user to select from for each image
 
@@ -77,7 +77,7 @@ def correct_incorrect_guess(user_input, correct_answer):
     answer_choices = [correct_answer] + selected_incorrect_answers
     random.shuffle(answer_choices)
 
-    if user_input.lower() == correct_answer.lower():
+    if user_choice.lower() == correct_answer.lower():
         result = "Correct!"
     else:
         result = f"Wrong! The correct answer was: {correct_answer}"
@@ -90,9 +90,7 @@ def rescale_image(path):
 
     #full screen resolution
     infoObject = pygame.display.Info()
-    resolution = (infoObject.current_w, infoObject.current_h)
-    screen = pygame.display.set_mode(resolution)
-    screen_w, screen_h = screen.get_size()
+    screen_w, screen_h = infoObject.current_w, infoObject.current_h
 
     #resize image to fit screen
     img_w, img_h = img.get_size()
@@ -110,7 +108,10 @@ def rescale_image(path):
 
     return img, img_w, img_h, x, y
 
-def button_design(size, font, bg_color, txt_color):
+def button_design(screen, answer_choices, font):
+    #full screen resolution
+    screen_w, screen_h = screen.get_size()
+    
     #button properties
     buttons = []
     button_height = 80
@@ -119,12 +120,6 @@ def button_design(size, font, bg_color, txt_color):
     bg_color = (255,255,255)
     start_y = screen_h - (button_height * 4 + spacing * 3) - 80
     x = (screen_w - button_width)//2
-
-    #full screen resolution
-    infoObject = pygame.display.Info()
-    resolution = (infoObject.current_w, infoObject.current_h)
-    screen = pygame.display.set_mode(resolution)
-    screen_w, screen_h = screen.get_size()
 
     for i, text in enumerate(answer_choices):
         y = start_y + i * (button_height + spacing)
@@ -160,16 +155,18 @@ def main():
     infoObject = pygame.display.Info() 
     resolution = (infoObject.current_w, infoObject.current_h)
     screen = pygame.display.set_mode(resolution)
+    font = pygame.font.SysFont(None, 48)
     
     
     idx = 0
     current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
     #event loop
-    user_input = " "
-    #correct = correct_incorrect_guess(user_input, correct_answer) #placeholder for now
+    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+    result, answer_choices = correct_incorrect_guess("", correct_answer)
     running = True
 
     while running:
+        buttons = button_design(screen, answer_choices, font)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -188,30 +185,28 @@ def main():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mx, my = event.pos
 
-                for i, rect in enumerate(buttons):
-                    if rect.collidepoint(mx, my):
-                        user_choice = choices[i]
-                    correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
-                    result, choices = correct_incorrect_guess(user_input, correct_answer)
-
-                    print(result)
-                    print("Choices:", choices)
-
-                    if result == "Correct!":
-                        idx += 1
-                        print(result)
-                    if idx >= len(image_paths): #if there are more images to go through
-                        #call rain.py confetti burst, but for now...
-                        print ("Congradulations! You beat the Game!")
-                    elif result == "Wrong! The correct answer was: " + correct_answer:
-                        print(result)
-                        time.sleep(3)
-                        running = False
-                    else:
-                        #change current image to next in the list
-                        current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
+                    for i, rect in enumerate(buttons):
+                        if rect.collidepoint(mx, my):
+                            user_choice = answer_choices[i]
                     
-                    user_input = ""
+                            result = correct_incorrect_guess(user_choice, correct_answer)
+
+                        if result == "Correct!":
+                            idx += 1
+                            print(result)
+                            if idx >= len(image_paths): #if there are more images to go through
+                                #call rain.py confetti burst, but for now...
+                                print ("Congradulations! You beat the Game!")
+                                running = False
+                                break
+                            current_image, img_w, img_h, x, y = rescale_image(image_paths[idx])
+                            correct_answer = os.path.basename(image_paths[idx]).split(".")[0]
+                            result, answer_choices = correct_incorrect_guess("", correct_answer)
+
+                        elif result == "Wrong! The correct answer was: " + correct_answer:
+                            print(result)
+                            time.sleep(3)
+                            running = False
                 
                 # Normal typing
                 else:
@@ -221,7 +216,10 @@ def main():
 
         screen.fill((0,0,0))
         screen.blit(current_image, (x,y))
+        buttons = button_design(screen, answer_choices, font)
         pygame.display.flip()
+
+        
 
 
 if __name__ == "__main__":
