@@ -38,9 +38,13 @@ def open_file_dialog():
         if image.endswith((".png", ".jpg", ".jpeg")):
             image_path = os.path.join("pixelated_images", image)
             return image_path
+        
+    #for image in os.listdir("chosen_images"): 
+        #if image.endswith((".png", ".jpg", ".jpeg")):
+            #original_path = os.path.join("chosen_images", image)
+            #return original_path
 
-
-def load_pixelated_images(directory="pixelated_images"):
+def load_pixelated_images(directory="pixelated_images", directory2 = "chosen_images"):
     """Load the pixelated images from the specified directory.
 
     :param directory: The directory containing the pixelated images.
@@ -55,6 +59,40 @@ def load_pixelated_images(directory="pixelated_images"):
             image_path = os.path.join(directory, image)
             image_paths.append(image_path)
     return image_paths
+    
+    #original_path = []
+    #for image in os.listdir(directory2):
+        #if image.endswith((".png", ".jpg", ".jpeg")):
+            #original_path = os.path.join(directory2, image)
+            #original_paths.append(original_path)
+    #return original_paths
+
+def load_original_image(pixelated_path):
+    # Extract base name without _pixelated
+    filename = os.path.basename(pixelated_path)
+    base = filename.replace("_pixelated", "")
+    
+    # Build path to original image
+    original_path = os.path.join("chosen_images", base)
+
+    # Load original image
+    img = pygame.image.load(original_path)
+
+    # Scale to screen
+    info = pygame.display.Info()
+    screen_w, screen_h = info.current_w, info.current_h
+    img_w, img_h = img.get_size()
+
+    scale = min(screen_w / img_w, screen_h / img_h)
+    new_w = int(img_w * scale)
+    new_h = int(img_h * scale)
+
+    img = pygame.transform.scale(img, (new_w, new_h))
+
+    x = (screen_w - new_w) // 2
+    y = (screen_h - new_h) // 2
+
+    return img, x, y
 
 def correct_incorrect_guess(user_choice, correct_answer):
     """Check if the user's guess is correct and return the appropriate response.
@@ -70,8 +108,7 @@ def correct_incorrect_guess(user_choice, correct_answer):
     :rtype: str
     """
     #create list of possible answers for program to randomly select from, including the correct answer and some incorrect answers
-    incorrect_answers = ["incorrect1", "incorrect2", "incorrect3", "incorrect4", "incorrect5"] #placement for now
-    #randomly select 3 incorrect answers from the list of incorrect answers
+    incorrect_answers = ["water bottle", "apple juice", "pumpkin", "pizza", "hand soap", ""]
     selected_incorrect_answers = random.sample(incorrect_answers, 3)
     #combine the correct answer with the selected incorrect answers and shuffle the list
     answer_choices = [correct_answer] + selected_incorrect_answers
@@ -150,6 +187,7 @@ def main():
     # Load pixelated images and initialize game variables
     image_paths = load_pixelated_images()
     random.shuffle(image_paths)
+    #original_paths = load_pixelated_images()
 
     # screen scale
     pygame.init()
@@ -179,6 +217,7 @@ def main():
 
         for event in pygame.event.get():
         # draw image and buttons first so rects exist
+        
             if gameover:
                 continue
             
@@ -205,9 +244,18 @@ def main():
                 for i, rect in enumerate(buttons):
                     if rect.collidepoint(mx, my):
                         user_choice = answer_choices[i]
-                    
-                        result, _ = correct_incorrect_guess(user_choice, correct_answer)
+                        
+                        #show original image 
+                        orig_img, ox, oy = load_original_image(image_paths[idx])
 
+                        screen.fill((0,0,0))
+                        screen.blit(orig_img, (ox, oy))
+                        pygame.display.flip()
+
+                        pygame.time.delay(1500)  # show original for 1.5 seconds
+
+                        result, _ = correct_incorrect_guess(user_choice, correct_answer)
+                        
                         if result == "Correct!":
                             idx += 1
                             print(result)
@@ -216,7 +264,7 @@ def main():
                                 #call rain.py confetti burst, but for now...
                                 # Render "End Game" on screen
                                 end_font = pygame.font.SysFont(None, 120)
-                                end_text = end_font.render("CONGRADULATIONS YOU WIN!", True, (255, 255, 255))
+                                end_text = end_font.render("CONGRATULATIONS YOU WIN!", True, (255, 255, 255))
 
                                 # Center the text
                                 text_rect = end_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
