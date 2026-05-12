@@ -2,7 +2,7 @@
 
 ## https://youtu.be/qV5aotiYnRY
 
-## Github Repository
+## https://github.com/spritesBox/My-Final-for-Programming-for-Digital-Arts.git
 
 ## A file takes an image from a folder and pixelates it into a new directory; 
 ## then another file starts the pixel game where the user has to guess what
