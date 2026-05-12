@@ -1,0 +1,13 @@
+### random
+math
+numpy import size
+pygame
+time 
+PIL
+Image 
+ImageDraw
+tkinter
+Tk
+filedialog
+os
+glob
